@@ -21,7 +21,7 @@ suite('Functional Tests', function() {
   */
   test('#example Test GET /api/books', function(done){
      chai.request(server)
-      .get('/api/books')
+      .get('/api/books/')
       .end(function(err, res){
         assert.equal(res.status, 200);
         assert.isArray(res.body, 'response should be an array');
@@ -41,11 +41,26 @@ suite('Functional Tests', function() {
     suite('POST /api/books with title => create book object/expect book object', function() {
       
       test('Test POST /api/books with title', function(done) {
-        //done();
+        chai.request(server)
+          .post('/api/books/')
+          .send({
+            title: 'Harry Potter'
+          })
+          .end((err, res) => {
+            assert.equal(res.status, 200);
+            assert.equal(res.body.title, 'Harry Potter');
+            done();
+          })
       });
       
       test('Test POST /api/books with no title given', function(done) {
-        //done();
+        chai.request(server)
+          .post('/api/books/')
+          .end((err, res) => {
+            assert.equal(res.status, 200);
+            assert.equal(res.body, 'missing required field title');
+            done();
+          })
       });
       
     });
@@ -54,20 +69,37 @@ suite('Functional Tests', function() {
     suite('GET /api/books => array of books', function(){
       
       test('Test GET /api/books',  function(done){
-        //done();
+        chai.request(server)
+          .get('/api/books/')
+          .end((err, res) => {
+            assert.equal(res.status, 200);
+            assert.isArray(res.body);
+            done();
+          })
       });      
-      
     });
 
 
     suite('GET /api/books/[id] => book object with [id]', function(){
       
       test('Test GET /api/books/[id] with id not in db',  function(done){
-        //done();
+        chai.request(server)
+          .get('/api/books/1')
+          .end((err, res) => {
+            assert.equal(res.status, 200);
+            assert.equal(res.body, 'no book exists');
+            done();
+          })
       });
       
       test('Test GET /api/books/[id] with valid id in db',  function(done){
-        //done();
+        chai.request(server)
+          .get('/api/books/678e426e7d52db9977d1728e')
+          .end((err, res) => {
+            assert.equal(res.status, 200);
+            assert.isArray(res.body);
+            done();
+          })
       });
       
     });
