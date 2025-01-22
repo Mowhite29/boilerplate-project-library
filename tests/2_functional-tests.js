@@ -20,7 +20,7 @@ suite('Functional Tests', function() {
   * Each test should completely test the response of the API end-point including response status code!
   */
   test('#example Test GET /api/books', function(done){
-     chai.request(server)
+    chai.request(server)
       .get('/api/books/')
       .end(function(err, res){
         assert.equal(res.status, 200);
@@ -94,10 +94,10 @@ suite('Functional Tests', function() {
       
       test('Test GET /api/books/[id] with valid id in db',  function(done){
         chai.request(server)
-          .get('/api/books/678e426e7d52db9977d1728e')
+          .get('/api/books/6790fea5d5bc51358ef3a7b4')
           .end((err, res) => {
             assert.equal(res.status, 200);
-            assert.isArray(res.body);
+            assert.propertyVal(res.body, '_id', '6790fea5d5bc51358ef3a7b4');
             done();
           })
       });
@@ -108,15 +108,39 @@ suite('Functional Tests', function() {
     suite('POST /api/books/[id] => add comment/expect book object with id', function(){
       
       test('Test POST /api/books/[id] with comment', function(done){
-        //done();
+        chai.request(server)
+          .post('/api/books/6790fea5d5bc51358ef3a7b4')
+          .send({
+            comment: 'hello'
+          })
+          .end((err, res) => {
+            assert.equal(res.status, 200);
+            assert.isArray(res.body);
+            done();
+          });
       });
 
       test('Test POST /api/books/[id] without comment field', function(done){
-        //done();
+        chai.request(server)
+          .post('/api/books/6790fea5d5bc51358ef3a7b4')
+          .end((err, res) => {
+            assert.equal(res.status, 200);
+            assert.equal(res.text, 'missing required field comment');
+            done();
+          });
       });
 
       test('Test POST /api/books/[id] with comment, id not in db', function(done){
-        //done();
+        chai.request(server)
+          .post('/api/books/1')
+          .send({
+            comment: 'hello'
+          })
+          .end((err, res) => {
+            assert.equal(res.status, 200);
+            assert.equal(res.body, 'no book exists');
+            done();
+          });
       });
       
     });
@@ -124,11 +148,23 @@ suite('Functional Tests', function() {
     suite('DELETE /api/books/[id] => delete book object id', function() {
 
       test('Test DELETE /api/books/[id] with valid id in db', function(done){
-        //done();
+        chai.request(server)
+        .delete('/api/books/6790fea5d5bc51358ef3a7b4')
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body, 'delete successful');
+          done();
+        })
       });
 
-      test('Test DELETE /api/books/[id] with  id not in db', function(done){
-        //done();
+      test('Test DELETE /api/books/[id] with id not in db', function(done){
+        chai.request(server)
+        .delete('/api/books/1')
+        .end((err, res) => {
+          assert.equal(res.status, 200);
+          assert.equal(res.body, 'no book exists');
+          done();
+        })
       });
 
     });
